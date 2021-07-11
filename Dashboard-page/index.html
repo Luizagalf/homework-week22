@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои задачи</title>
+    <style>
+        #error {
+            color: red;
+        }
+        #notes {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h2>Мои задачи</h2>
+    <form novalidate>
+        <div>
+            <label for="newTask">Новая задача</label>
+        </div>
+        <div>
+            <textarea type="text" id="newTask" name="newTask" class=inputs value="" placeholder="Введите текст" required></textarea>
+            <div id="error"></div>
+        </div>
+    </form> 
+        <div><button id="button" onclick="saveTask()";>Сохранить</button></div>
+        <div class="activTasks">
+            <div><h4>Активные задачи</h4>
+            <div id="activTasks"></div>
+            <button type="submit" onclick="done()">Выполнено</button>
+        </div>
+        <div class="doneTasks">
+            <div><h4>Выполненные задачи</h4>
+            <div id="doneTasks"></div>
+        </div>
+        <div class="weekTasks">
+            <div><h4>Задачи на этой неделе</h4>
+            <div id="weekTasks"></div>
+        </div>
+    <script src="./bundle.js"></script>
+</body>
+</html>
