@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
     <title>Мои задачи</title>
     <style>
         #error {
@@ -14,7 +15,7 @@
         }
     </style>
 </head>
-<body>
+<body class="p-3 mb-2 bg-light text-dark">
     <h2>Мои задачи</h2>
     <form novalidate>
         <div>
@@ -25,19 +26,28 @@
             <div id="error"></div>
         </div>
     </form> 
-        <div><button id="button" onclick="saveTask()";>Сохранить</button></div>
-        <div class="activTasks">
-            <div><h4>Активные задачи</h4>
-            <div id="activTasks"></div>
-            <button type="submit" onclick="done()">Выполнено</button>
+        <div><button class="btn btn-success" id="saveTask" disabled="true">Сохранить</button></div>
+        <div class="container">
+            <div class="row align-items-start justify-content-evenly">
+        <div class="activeTasks col-4">
+            <h4>Все активные задачи</h4>
+            <div class="form-check" id="activeTasks"></div>
+            <button class="btn btn-success" type="submit" id="doneTask">Выполнено</button>
         </div>
-        <div class="doneTasks">
-            <div><h4>Выполненные задачи</h4>
-            <div id="doneTasks"></div>
+        <div class="doneTasks col-4">
+            <h4>Выполненные задачи</h4>
+            <div class="form-check" id="doneTasks"></div>
         </div>
-        <div class="weekTasks">
-            <div><h4>Задачи на этой неделе</h4>
+    </div>
+    </div>
+        <div class="form-check" class="weekTasks">
+            <div><h4>Задачи за последнюю неделю</h4>
             <div id="weekTasks"></div>
+        </div>
+
+        <div class="container progressTasks">
+            <div><h4>Прогресс</h4>
+            <canvas id="myChart" width="600" height="400"></canvas>
         </div>
     <script src="./bundle.js"></script>
 </body>

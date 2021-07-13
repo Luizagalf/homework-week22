@@ -1,92 +1,167 @@
 const moment = require("moment");
+const uniqid = require("uniqid");
+const chartJs = require("chartjs-plugin-datalabels");
+const getId = require("./utils.js");
+const isValid = require('./validation.js')
 // const chart = require("chart");
 
-let date = moment("20111031", "YYYYMMDD").format('dddd');
-console.log(date);
-
-let errors = [];
-let checkValidity = (textarea) => {
-    let validity = textarea.validity;
-    if (validity.valueMissing) {
-        errors.push("Вы не ввели текст");
-    }
-}
-
-let activTasks = document.getElementById("activTasks");
-let doneTasks = document.getElementById("doneTasks");
+let activeTasks = getId("activeTasks");
+let doneTasks = getId("doneTasks");
+let weekTasks = getId("weekTasks");
 let allTasks = [];
 
+console.log(moment().subtract(7, 'days').format("DD.MM.YYYY"));
+
+//функция, которая показывает все таски
 let displayTasks = (allTasks) => {
-    activTasks.innerHTML = "";
+    activeTasks.innerHTML = "";
     doneTasks.innerHTML = "";
     for (let i = 0; i < allTasks.length; i++) {
-        if (allTasks[i].active == false) {
-            activTasks.innerHTML += `<br><input type="checkbox" name="task" id="task"/> <label for="task">(${allTasks[i].date}) ${allTasks[i].text}</label><br/>`;
+        if (allTasks[i].done == false) {
+            activeTasks.innerHTML += `<br><input class="form-check-input" type="checkbox" name="task" id="task"/> <label class="form-check-label" for="task">(${allTasks[i].date}) ${allTasks[i].text} </label> <svg class="delete" id="${allTasks[i].id}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+            <path d="M1.293 1.293a1 1 0 0 1 1.414 0L8 6.586l5.293-5.293a1 1 0 1 1 1.414 1.414L9.414 8l5.293 5.293a1 1 0 0 1-1.414 1.414L8 9.414l-5.293 5.293a1 1 0 0 1-1.414-1.414L6.586 8 1.293 2.707a1 1 0 0 1 0-1.414z"/></svg></br>`;
         } else {
-            doneTasks.innerHTML += `<br><input type="checkbox" name="task" id="task"/> <label for="task">(${allTasks[i].date}) ${allTasks[i].text}</label><br/>`;
+            doneTasks.innerHTML += `<br><input class="form-check-input" type="checkbox" name="task" id="task"/> <label class="form-check-label" for="task">(${allTasks[i].date}) ${allTasks[i].text}</label> <svg class="delete" id="${allTasks[i].id}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+            <path d="M1.293 1.293a1 1 0 0 1 1.414 0L8 6.586l5.293-5.293a1 1 0 1 1 1.414 1.414L9.414 8l5.293 5.293a1 1 0 0 1-1.414 1.414L8 9.414l-5.293 5.293a1 1 0 0 1-1.414-1.414L6.586 8 1.293 2.707a1 1 0 0 1 0-1.414z"/></svg></br>`;
         }
     }
+
+    weekTasks.innerHTML = "";
     for (let i = 0; i < allTasks.length; i++) {
-        if (task[i].date > moment(task[i].date).subtract(7, 'days')) {
-            // document.getElementById(weekTasks).innerHTML += task[i];
-            // let date = moment("task[i].date", "DDMMYYYY").format('dddd');
-            console.log(task);
+        if (allTasks[i].date > moment().subtract(7, 'days').format("DD.MM.YYYY") && allTasks[i].done == false) {
+            weekTasks.innerHTML += `<br><input class="form-check-input" type="checkbox" name="task" id="task"/> <label class="form-check-label" for="task">(${moment(allTasks[i].date).format('dddd')}) ${allTasks[i].text}</label> <svg class="delete" id="${allTasks[i].id}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+            <path d="M1.293 1.293a1 1 0 0 1 1.414 0L8 6.586l5.293-5.293a1 1 0 1 1 1.414 1.414L9.414 8l5.293 5.293a1 1 0 0 1-1.414 1.414L8 9.414l-5.293 5.293a1 1 0 0 1-1.414-1.414L6.586 8 1.293 2.707a1 1 0 0 1 0-1.414z"/></svg></br>`;
+            console.log(weekTasks);
         }
     }
+
+    const deleteBtns = document.getElementsByClassName("delete");
+    for (let deleteBtn of deleteBtns) {
+        deleteBtn.addEventListener('click', () => {
+            deleteTask(deleteBtn.id);
+        })
+    }
+
+    // const ctx = document.getElementById('myChart').getContext('2d');
+    // const myChart = new Chart(ctx, {
+    //     type: 'pie',
+    //     data: {
+    //         labels: ['Активные задачи', 'Выполненные задачи'],
+    //         datasets: [{
+    //             data: [allTasks.filter(task => task.done === false).length, allTasks.filter(task => task.done === true).length],
+    //             backgroundColor: ['#e91e63', '#1e88e5'],
+    //             borderWidth: 0.5,
+    //             borderColor: '#ddd'
+    //         }]
+    //     },
+    //     options: {
+    //         title: {
+    //             display: true,
+    //             text: 'Recommended Daily Diet',
+    //             position: 'top',
+    //             fontSize: 16,
+    //             fontColor: '#111',
+    //             padding: 20
+    //         },
+    //         legend: {
+    //             display: true,
+    //             position: 'bottom',
+    //             labels: {
+    //                 boxWidth: 20,
+    //                 fontColor: '#111',
+    //                 padding: 15
+    //             }
+    //         },
+    //         tooltips: {
+    //             enabled: false
+    //         },
+    //         plugins: {
+    //             datalabels: {
+    //                 color: '#111',
+    //                 textAlign: 'center',
+    //                 font: {
+    //                     lineHeight: 1.6
+    //                 },
+    //                 formatter: function (value, ctx) {
+    //                     return ctx.chart.data.labels[ctx.dataIndex] + '\n' + value + '%';
+    //                 }
+    //             }
+    //         }
+    //     }
+    // });
 }
 
-let saveTasks = () => {
-    localStorage.setItem("allTasks", JSON.stringify(allTasks));
+// функция для сохранения задачи в localStorage
+let saveTasks = (tasks) => {
+    localStorage.setItem("allTasks", JSON.stringify(tasks));
+    allTasks = tasks;
 }
 
-document.addEventListener("DOMContentLoaded", function (event) {
+document.addEventListener("DOMContentLoaded", () => {
+    // валидация поля ввода на пустоту
+    const save = getId("saveTask");
+    const textarea = getId("newTask");
+
+    textarea.addEventListener("input", () => {
+        save.disabled = !isValid(textarea.value)
+    })
+
     let loadedAllTasks = localStorage.getItem("allTasks");
 
     if (loadedAllTasks != null) {
-        console.log({
-            loadedAllTasks
-        });
         allTasks = JSON.parse(loadedAllTasks);
         displayTasks(allTasks);
     }
 });
 
-let saveTask = () => {
-    errors = [];
-    let options = {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-    };
-    let textareas = document.querySelectorAll("textarea");
-    for (let textarea of textareas) {
-        checkValidity(textarea);
-    }
-    document.getElementById("error").innerHTML = errors.join("<br>");
-
-    let newTask = document.getElementById("newTask").value;
+saveTask.addEventListener('click', () => {
+    let newTask = getId("newTask").value;
 
     if (newTask != "") {
         newTaskJson = {
             text: newTask,
-            date: new Date().toLocaleString("ru", options),
-            active: false
+            date: moment().format('DD.MM.YYYY'),
+            id: uniqid(),
+            done: false
         }
+        allTasks.push({
+            text: "Стирка",
+            date: "12.07.2021",
+            id: uniqid(),
+            done: false
+        }, {
+            text: "Поездка в горы",
+            date: "08.07.2021",
+            id: uniqid(),
+            done: false
+        }, {
+            text: "Свадьба друзей",
+            date: "09.07.2021",
+            id: uniqid(),
+            done: false
+        });
         allTasks.push(newTaskJson);
+        console.log(allTasks);
 
         displayTasks(allTasks);
-        document.getElementById("newTask").value = "";
-        saveTasks();
+        getId("newTask").value = "";
+        saveTasks(allTasks);
     }
-}
+})
 
-let done = () => {
+doneTask.addEventListener('click', () => {
     let task = document.getElementsByName("task");
     for (let i = 0; i < allTasks.length; i++) {
         if (task[i].checked) {
-            allTasks[i].active = true;
-            displayTasks(allTasks);
+            allTasks[i].done = true;
         }
     }
-    saveTasks();
+    displayTasks(allTasks);
+    saveTasks(allTasks);
+})
+
+const deleteTask = (id) => {
+    const filtredAllTasks = allTasks.filter(task => task.id !== id)
+    saveTasks(filtredAllTasks);
+    displayTasks(allTasks);
 }
